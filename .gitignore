@@ -1,0 +1,64 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# 打包凭证（本地私密配置，绝不提交 / 上传）
+secrets/
+
+# 构建产物
+*.ipa
+*.app.dSYM.zip
+build-*.json
+
+# 构建辅助文件
+# 注意：eas build 会用 .gitignore 决定「哪些文件不打进上传包」，
+# 所以打包日志必须在这里排除，否则它会被一起上传（实测能打进包里）。
+.eas-build.log
+.web-dev.log
+.tmp-*
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
+
+# 营销产物（截图/海报，可由脚本重新生成，不进仓库）
+marketing/raw/
+marketing/raw-ipad/
+marketing/raw-ipad13/
+marketing/appstore-*.png
+marketing/creative/
+marketing/.preview/
