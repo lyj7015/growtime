@@ -1,15 +1,8 @@
 name: Build iOS IPA
 
-# 手动触发，或改动 app/ src/ assets/ 时自动触发
+# 仅手动触发（workflow_dispatch / gh workflow run）——改代码不再自动打包，节省 macOS 额度
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'app.json'
-      - 'package.json'
-      - 'src/**'
-      - 'assets/**'
 
 jobs:
   build:
