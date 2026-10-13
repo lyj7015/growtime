@@ -13,9 +13,16 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14 # Apple Silicon，自带 Xcode
+    runs-on: macos-15 # Apple Silicon；macos-14 默认 Xcode 15.4，不满足 RN 0.86 的 >=16.1 要求
     steps:
       - uses: actions/checkout@v4
+
+      # 显式选最新的 Xcode，避免默认版本过旧
+      - name: Select latest Xcode
+        run: |
+          ls -d /Applications/Xcode*.app
+          sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          xcodebuild -version
 
       - uses: actions/setup-node@v4
         with:
