@@ -17,11 +17,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 显式选最新的 Xcode，避免默认版本过旧
-      - name: Select latest Xcode
+      # 显式选 Xcode：RN 0.86 需要 >=16.1，但 26.x 的 Swift 6.2 与其不兼容（RuntimeScheduler 注解报错），
+      # 优先选 16.x，与 EAS 云构建环境一致
+      - name: Select Xcode 16.x
         run: |
           ls -d /Applications/Xcode*.app
-          sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+          XCODE="$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)"
+          if [ -z "$XCODE" ]; then XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"; fi
+          echo "using $XCODE"
+          sudo xcode-select -s "$XCODE"
           xcodebuild -version
 
       - uses: actions/setup-node@v4
