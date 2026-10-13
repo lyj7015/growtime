@@ -44,7 +44,7 @@ jobs:
           npx expo prebuild -p ios --no-install
           cd ios && pod install
           cd ../node_modules/expo-modules-jsi/apple
-          PODS_ROOT="$(cd ../../ios/Pods && pwd)" bash scripts/build-xcframework.sh
+          PODS_ROOT="$(cd ../../../ios/Pods && pwd)" bash scripts/build-xcframework.sh
 
       # eas build --local 在 GitHub 的 macOS 机器上本地构建，
       # 不消耗 EAS 免费额度；证书/描述文件从 Expo 服务器自动拉取（需 EXPO_TOKEN）。
