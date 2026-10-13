@@ -41,8 +41,8 @@ jobs:
       # 全部输出落到 /tmp/emjsi-build.log。
       - name: Patch ExpoModulesJSI script for verbose logging
         run: |
-          node -e "const fs=require('fs');const p='node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh';let s=fs.readFileSync(p,'utf8');if(!s.includes('emjsi-build.log')){s=s.replace('set -euo pipefail','set -euo pipefail\nexec >> /tmp/emjsi-build.log 2>&1');fs.writeFileSync(p,s);console.log('patched');}"
-          rm -f /tmp/emjsi-build.log
+          node -e "const fs=require('fs');const p='node_modules/expo-modules-jsi/apple/scripts/build-xcframework.sh';let s=fs.readFileSync(p,'utf8');if(!s.includes('emjsi-build.log')){s=s.replace('set -euo pipefail','set -euo pipefail\nLOGF=\"\${GITHUB_WORKSPACE:-\$HOME}/emjsi-build.log\"\nexec >> \"\$LOGF\" 2>&1\necho \"=== emjsi log start ===\"');fs.writeFileSync(p,s);console.log('patched');}"
+          rm -f "$GITHUB_WORKSPACE/emjsi-build.log" /var/folders/*/*/T/emjsi-build.log 2>/dev/null || true
 
       # eas build --local 在 GitHub 的 macOS 机器上本地构建，
       # 不消耗 EAS 免费额度；证书/描述文件从 Expo 服务器自动拉取（需 EXPO_TOKEN）
@@ -62,7 +62,8 @@ jobs:
         if: failure()
         run: |
           mkdir -p ./xlogs
-          cp -f /tmp/emjsi-build.log ./xlogs/ 2>/dev/null || true
+          cp -f ./emjsi-build.log ./xlogs/ 2>/dev/null || true
+          cp -f "$HOME/emjsi-build.log" ./xlogs/ 2>/dev/null || true
           find /private/var/folders /var/folders -type d -name logs -path "*eas-build-local-nodejs*" 2>/dev/null | while read d; do cp -r "$d"/. ./xlogs/ 2>/dev/null || true; done
           du -sh ./xlogs || true
 
