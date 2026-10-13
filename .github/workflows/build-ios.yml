@@ -14,19 +14,22 @@ on:
 jobs:
   build:
     runs-on: macos-15 # Apple Silicon；macos-14 默认 Xcode 15.4，不满足 RN 0.86 的 >=16.1 要求
+    env:
+      # ExpoModulesJSI 的 Package.swift 要求 Swift tools 6.2（Xcode 16.x 只有 6.1），
+      # 而 Xcode 26.3 的 Swift 又引发 RuntimeScheduler 注解错误 → 用 26.2
+      XCODE_VERSION: 26.2
     steps:
       - uses: actions/checkout@v4
 
-      # 显式选 Xcode：RN 0.86 需要 >=16.1，但 26.x 的 Swift 6.2 与其不兼容（RuntimeScheduler 注解报错），
-      # 优先选 16.x，与 EAS 云构建环境一致
-      - name: Select Xcode 16.x
+      # 显式选指定版本的 Xcode
+      - name: Select Xcode
         run: |
           ls -d /Applications/Xcode*.app
-          XCODE="$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)"
-          if [ -z "$XCODE" ]; then XCODE="$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"; fi
+          XCODE="$(ls -d /Applications/Xcode_${XCODE_VERSION}*.app 2>/dev/null | sort -V | tail -1)"
           echo "using $XCODE"
           sudo xcode-select -s "$XCODE"
           xcodebuild -version
+          xcrun swift --version
 
       - uses: actions/setup-node@v4
         with:
