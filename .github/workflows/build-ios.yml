@@ -36,14 +36,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # 诊断步骤：在 EAS 沙箱外手动复现 "Build ExpoModulesJSI xcframework" 脚本，
+      # 让它的真实报错直接打在 job 日志里（EAS 内部该阶段输出被 xcbeautify 吞掉）。
+      # 若此步失败则直接停（无需再跑 eas build）。
+      - name: Reproduce ExpoModulesJSI build (debug)
+        run: |
+          npx expo prebuild -p ios --no-install
+          cd ios && pod install
+          cd ../node_modules/expo-modules-jsi/apple
+          PODS_ROOT="$(cd ../../ios/Pods && pwd)" bash scripts/build-xcframework.sh
+
       # eas build --local 在 GitHub 的 macOS 机器上本地构建，
       # 不消耗 EAS 免费额度；证书/描述文件从 Expo 服务器自动拉取（需 EXPO_TOKEN）。
-      # EAS_BUILD_XCODEBUILD_FORMATTER=none 关闭 xcbeautify，让 xcodebuild 原始输出直接进 job 日志，
-      # 否则 Pod 脚本阶段（如 Build ExpoModulesJSI xcframework）失败时看不到真实报错。
       - name: Build IPA
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          EAS_BUILD_XCODEBUILD_FORMATTER: none
         run: |
           npx eas-cli@latest build \
             --local \
