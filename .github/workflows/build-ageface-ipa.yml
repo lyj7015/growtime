@@ -27,8 +27,9 @@ jobs:
         with:
           repository: lyj7015/ageface
           ref: ${{ inputs.ageface_ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ssh-key: ${{ secrets.GITHUB_TOKEN }}
+          # AgeFace 是私有仓库，跨仓库访问必须用 PAT（AGEFACE_REPO_TOKEN）。
+          # 不能配 ssh-key —— 那会让 checkout 切到 SSH 并因无公钥失败。
+          token: ${{ secrets.AGEFACE_REPO_TOKEN }}
           persist-credentials: false
 
       - name: Select Xcode
